@@ -94,7 +94,7 @@ export default function SalesHistoryPage() {
               >
                 <option value="">All</option>
                 <option value="cash">Cash</option>
-                <option value="card">Card</option>
+                <option value="ewallet">E-Wallet</option>
               </select>
             </div>
             <Button

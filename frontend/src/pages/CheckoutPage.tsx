@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Minus, ShoppingCart, X, CreditCard, Banknote, Printer, Search, Tag } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, X, Banknote, Printer, Search, Tag, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const [amountTendered, setAmountTendered] = useState<string>('');
-  const [paymentMode, setPaymentMode] = useState<'none' | 'cash' | 'card'>('none');
+  const [paymentMode, setPaymentMode] = useState<'none' | 'cash' | 'ewallet'>('none');
 
   useState(() => {
     window.go.main.App.GetTaxRate().then(setTaxRate);
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
     setCart(prev => prev.filter(i => i.product.id !== productId));
   };
 
-  const handlePayment = async (method: 'cash' | 'card') => {
+  const handlePayment = async (method: 'cash' | 'ewallet') => {
     if (cart.length === 0) {
       toast.error('Cart is empty');
       return;
@@ -284,15 +284,12 @@ export default function CheckoutPage() {
                 CASH
               </Button>
               <Button
-                variant={paymentMode === 'card' ? 'secondary' : 'outline'}
-                className={`flex-1 h-20 flex-col gap-2 font-bold transition-all border-2 ${paymentMode === 'card' ? 'border-secondary ring-2 ring-secondary/20' : 'opacity-70'}`}
-                onClick={() => {
-                  setPaymentMode('card');
-                  handlePayment('card');
-                }}
+                variant={paymentMode === 'ewallet' ? 'secondary' : 'outline'}
+                className={`flex-1 h-20 flex-col gap-2 font-bold transition-all border-2 ${paymentMode === 'ewallet' ? 'border-secondary ring-2 ring-secondary/20' : 'opacity-70'}`}
+                onClick={() => setPaymentMode('ewallet')}
               >
-                <CreditCard className="h-6 w-6" />
-                CARD
+                <Smartphone className="h-6 w-6" />
+                E-WALLET
               </Button>
             </div>
 
@@ -351,6 +348,26 @@ export default function CheckoutPage() {
                   className="w-full h-16 text-xl font-black tracking-[0.1em] bg-green-600 hover:bg-green-700 shadow-xl shadow-green-600/30 ring-4 ring-white"
                   onClick={() => handlePayment('cash')}
                   disabled={!amountTendered || parseFloat(amountTendered) < total}
+                >
+                  COMPLETE TRANSACTION
+                </Button>
+              </div>
+            )}
+
+            {paymentMode === 'ewallet' && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="flex items-center justify-between p-4 bg-secondary/30 border-2 border-secondary/30 rounded-2xl">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">GCash / PayMaya / E-Wallet</span>
+                    <span className="text-3xl font-black text-primary">₱{total.toFixed(2)}</span>
+                  </div>
+                  <div className="h-10 w-10 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground shadow-lg">
+                    <Smartphone className="h-6 w-6" />
+                  </div>
+                </div>
+                <Button
+                  className="w-full h-16 text-xl font-black tracking-[0.1em] bg-green-600 hover:bg-green-700 shadow-xl shadow-green-600/30 ring-4 ring-white"
+                  onClick={() => handlePayment('ewallet')}
                 >
                   COMPLETE TRANSACTION
                 </Button>

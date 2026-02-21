@@ -16,7 +16,7 @@ export function useSales() {
   const completeSale = useCallback(async (
     cart: CartItem[],
     taxRate: number,
-    paymentMethod: 'cash' | 'card',
+    paymentMethod: 'cash' | 'ewallet',
     amountTendered?: number
   ) => {
     const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);

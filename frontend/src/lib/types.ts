@@ -20,7 +20,7 @@ export interface Sale {
   tax: number;
   taxRate: number;
   total: number;
-  paymentMethod: 'cash' | 'card';
+  paymentMethod: 'cash' | 'ewallet';
   amountTendered?: number;
   change?: number;
   createdAt: string;
