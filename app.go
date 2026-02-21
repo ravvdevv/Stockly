@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	_ "modernc.org/sqlite"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -79,6 +80,10 @@ func (a *App) initDB() {
 			quantity INTEGER,
 			price REAL,
 			FOREIGN KEY(saleId) REFERENCES sales(id)
+		)`,
+		`CREATE TABLE IF NOT EXISTS settings (
+			key TEXT PRIMARY KEY,
+			value TEXT NOT NULL
 		)`,
 	}
 
@@ -275,4 +280,103 @@ func (a *App) RenameCategory(oldName string, newName string) error {
 func (a *App) DeleteCategory(id string) error {
 	_, err := a.db.Exec("DELETE FROM categories WHERE id=?", id)
 	return err
+}
+
+// GetTaxRate retrieves the current tax rate from settings
+func (a *App) GetTaxRate() (float64, error) {
+	var rateStr string
+	err := a.db.QueryRow("SELECT value FROM settings WHERE key = 'tax_rate'").Scan(&rateStr)
+	if err == sql.ErrNoRows {
+		// Initialize with default 12% if not set
+		a.SaveTaxRate(12.0)
+		return 12.0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	var rate float64
+	fmt.Sscanf(rateStr, "%f", &rate)
+	return rate, nil
+}
+
+// SaveTaxRate updates the global tax rate in settings
+func (a *App) SaveTaxRate(rate float64) error {
+	_, err := a.db.Exec("INSERT OR REPLACE INTO settings (key, value) VALUES ('tax_rate', ?)", fmt.Sprintf("%.2f", rate))
+	return err
+}
+
+// ExportDatabase allows the user to save a backup of the current database
+func (a *App) ExportDatabase() error {
+	home, _ := os.UserHomeDir()
+	dbPath := filepath.Join(home, ".stockly", "stockly.db")
+
+	targetPath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:           "Export Database Backup",
+		DefaultFilename: "stockly_backup.db",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "SQLite Database (*.db)", Pattern: "*.db"},
+		},
+	})
+	if err != nil || targetPath == "" {
+		return err
+	}
+
+	data, err := os.ReadFile(dbPath)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(targetPath, data, 0644)
+}
+
+// ImportDatabase allows the user to restore a backup
+func (a *App) ImportDatabase() error {
+	sourcePath, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Import Database Backup",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "SQLite Database (*.db)", Pattern: "*.db"},
+		},
+	})
+	if err != nil || sourcePath == "" {
+		return err
+	}
+
+	data, err := os.ReadFile(sourcePath)
+	if err != nil {
+		return err
+	}
+
+	// Close current DB to replace the file
+	a.db.Close()
+
+	home, _ := os.UserHomeDir()
+	dbPath := filepath.Join(home, ".stockly", "stockly.db")
+
+	err = os.WriteFile(dbPath, data, 0644)
+	if err != nil {
+		// Attempt to re-open even if write failed
+		db, _ := sql.Open("sqlite", dbPath)
+		a.db = db
+		return err
+	}
+
+	// Re-open
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		return err
+	}
+	a.db = db
+	return nil
+}
+
+// ResetDatabase clears all business data from the app
+func (a *App) ResetDatabase() error {
+	tables := []string{"sale_items", "sales", "products", "categories"}
+	for _, table := range tables {
+		_, err := a.db.Exec(fmt.Sprintf("DELETE FROM %s", table))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

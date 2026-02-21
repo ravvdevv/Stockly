@@ -15,7 +15,7 @@ export default function CheckoutPage() {
   const { products, refresh: refreshProducts } = useProducts();
   const { completeSale } = useSales();
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [taxRate, setTaxRate] = useState(10);
+  const [taxRate, setTaxRate] = useState(12);
   const [search, setSearch] = useState('');
   const [receiptSale, setReceiptSale] = useState<Sale | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -23,6 +23,10 @@ export default function CheckoutPage() {
 
   const [amountTendered, setAmountTendered] = useState<string>('');
   const [paymentMode, setPaymentMode] = useState<'none' | 'cash' | 'card'>('none');
+
+  useState(() => {
+    window.go.main.App.GetTaxRate().then(setTaxRate);
+  });
 
   const availableProducts = products.filter(p => p.stock > 0);
   const filteredProducts = availableProducts.filter(p =>
@@ -228,18 +232,9 @@ export default function CheckoutPage() {
                     <Tag className="h-3.5 w-3.5" />
                     <span>Tax Rate</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                      value={taxRate}
-                      onChange={e => setTaxRate(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
-                      className="w-16 h-8 text-right font-medium text-xs pr-1"
-                    />
-                    <span className="text-xs font-bold">%</span>
-                  </div>
+                  <Badge variant="outline" className="text-xs font-bold">
+                    {taxRate}%
+                  </Badge>
                 </div>
 
                 <div className="bg-primary/5 rounded-xl p-4 space-y-2 border border-primary/10">

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Receipt, Tag } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Receipt, Tag, Settings } from 'lucide-react';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/categories', label: 'Categories', icon: Tag },
   { to: '/checkout', label: 'Checkout', icon: ShoppingCart },
   { to: '/sales', label: 'Sales', icon: Receipt },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {

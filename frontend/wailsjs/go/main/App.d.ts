@@ -10,14 +10,24 @@ export function DeleteCategory(arg1:string):Promise<void>;
 
 export function DeleteProduct(arg1:string):Promise<void>;
 
+export function ExportDatabase():Promise<void>;
+
 export function GetCategories():Promise<Array<main.Category>>;
 
 export function GetProducts():Promise<Array<main.Product>>;
 
 export function GetSales():Promise<Array<main.Sale>>;
 
+export function GetTaxRate():Promise<number>;
+
+export function ImportDatabase():Promise<void>;
+
 export function RenameCategory(arg1:string,arg2:string):Promise<void>;
 
+export function ResetDatabase():Promise<void>;
+
 export function SaveCategory(arg1:main.Category):Promise<void>;
+
+export function SaveTaxRate(arg1:number):Promise<void>;
 
 export function UpdateProduct(arg1:main.Product):Promise<void>;

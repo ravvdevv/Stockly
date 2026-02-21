@@ -48,6 +48,11 @@ declare global {
           SaveCategory(c: Category): Promise<void>;
           RenameCategory(oldName: string, newName: string): Promise<void>;
           DeleteCategory(id: string): Promise<void>;
+          GetTaxRate(): Promise<number>;
+          SaveTaxRate(rate: number): Promise<void>;
+          ExportDatabase(): Promise<void>;
+          ImportDatabase(): Promise<void>;
+          ResetDatabase(): Promise<void>;
         }
       }
     };

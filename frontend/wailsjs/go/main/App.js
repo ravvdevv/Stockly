@@ -18,6 +18,10 @@ export function DeleteProduct(arg1) {
   return window['go']['main']['App']['DeleteProduct'](arg1);
 }
 
+export function ExportDatabase() {
+  return window['go']['main']['App']['ExportDatabase']();
+}
+
 export function GetCategories() {
   return window['go']['main']['App']['GetCategories']();
 }
@@ -30,12 +34,28 @@ export function GetSales() {
   return window['go']['main']['App']['GetSales']();
 }
 
+export function GetTaxRate() {
+  return window['go']['main']['App']['GetTaxRate']();
+}
+
+export function ImportDatabase() {
+  return window['go']['main']['App']['ImportDatabase']();
+}
+
 export function RenameCategory(arg1, arg2) {
   return window['go']['main']['App']['RenameCategory'](arg1, arg2);
 }
 
+export function ResetDatabase() {
+  return window['go']['main']['App']['ResetDatabase']();
+}
+
 export function SaveCategory(arg1) {
   return window['go']['main']['App']['SaveCategory'](arg1);
+}
+
+export function SaveTaxRate(arg1) {
+  return window['go']['main']['App']['SaveTaxRate'](arg1);
 }
 
 export function UpdateProduct(arg1) {
